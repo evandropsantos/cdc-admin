@@ -1,10 +1,35 @@
 import React, { Component } from 'react';
-//import logo from './logo.svg';
+
 import './css/pure-min.css';
 import './css/side-menu.css';
 
 class App extends Component {
+
+	constructor() {
+
+		super();
+
+		this.state = { lista: [] };
+	}
+
+	componentDidMount() {
+
+		const xhr = new XMLHttpRequest();
+
+		xhr.open('GET', 'http://cdc-react.herokuapp.com/api/autores');
+
+		xhr.onreadystatechange = function() {
+
+			if( xhr.readyState === 4) 
+				if( xhr.status === 200) 
+					this.setState( { lista: JSON.parse(xhr.responseText) } );
+		}.bind(this)
+
+		xhr.send();
+	}
+	
 	render() {
+
 		return (
 			<div id="layout">
 				<a href="#menu" id="menuLink" className="menu-link"><span></span></a>
@@ -59,10 +84,16 @@ class App extends Component {
 								</thead>
 								
 								<tbody>
-									<tr>
-										<td>Josemar</td>                
-										<td>josemar.souza@gmail.com</td>                
-									</tr>
+									{
+										this.state.lista.map(function(autor) {
+											return (
+												<tr key={autor.id}>
+													<td>{autor.nome}</td>
+													<td>{autor.email}</td>
+												</tr>
+											);
+										})
+									}
 								</tbody>
 							</table> 
 						</div>             
