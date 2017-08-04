@@ -5,6 +5,7 @@ import InputCustom from './components/InputCustom';
 import SubmitCustom from './components/SubmitCustom';
 
 import PubSub from 'pubsub-js';
+import TratadorErros from './TratadorErros';
 
 class FormAuthor extends Component {
 
@@ -30,8 +31,23 @@ class FormAuthor extends Component {
 			dataType:'json',
 			type:'post',
 			data: JSON.stringify( {nome: this.state.nome, email: this.state.email, senha: this.state.senha} ),
-			success: function(response) { PubSub.publish('atualiza-lista-autores', response) },
-			error: function(error) { console.log(error); }
+			success: function(response) { 
+
+                PubSub.publish('atualiza-lista-autores', response);
+                this.setState( {nome: '', email: '', senha: ''} ); 
+
+            }.bind(this),
+			error: function(response) { 
+
+                if(response.status === 400 ) {
+
+                    new TratadorErros().publicaErros( response.responseJSON );
+                }
+            },
+            beforeSend: function() {
+                
+                PubSub.publish('limpa-erros', {});
+            }
 		});
 	}
 
@@ -105,9 +121,9 @@ export default class AuthorBox extends Component {
 			success: function(response) { this.setState({lista:response}); }.bind(this)
         });   
         
-        PubSub.subscribe('atualiza-lista-autores', function( topico, novaLista) {
+        PubSub.subscribe('atualiza-lista-autores', function( topico, novaLista ) { 
 
-            this.setState( {lista: novaLista} );
+            this.setState( {lista: novaLista} ); 
         }.bind(this));
     }
 
