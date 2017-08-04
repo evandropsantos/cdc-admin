@@ -4,6 +4,8 @@ import $ from 'jquery';
 import InputCustom from './components/InputCustom';
 import SubmitCustom from './components/SubmitCustom';
 
+import PubSub from 'pubsub-js';
+
 class FormAuthor extends Component {
 
     constructor() {
@@ -28,7 +30,7 @@ class FormAuthor extends Component {
 			dataType:'json',
 			type:'post',
 			data: JSON.stringify( {nome: this.state.nome, email: this.state.email, senha: this.state.senha} ),
-			success: function(response) { this.props.callbackAtualizaListagem(response); }.bind(this),
+			success: function(response) { PubSub.publish('atualiza-lista-autores', response) },
 			error: function(error) { console.log(error); }
 		});
 	}
@@ -93,8 +95,6 @@ export default class AuthorBox extends Component {
         super();
 
         this.state = {lista: []};
-        
-        this.atualizaListagem = this.atualizaListagem.bind(this);
     }
 
     componentDidMount() {
@@ -103,16 +103,19 @@ export default class AuthorBox extends Component {
 			url: "http://localhost:8080/api/autores",
 			dataType: 'json',
 			success: function(response) { this.setState({lista:response}); }.bind(this)
-		});      
-    }
+        });   
+        
+        PubSub.subscribe('atualiza-lista-autores', function( topico, novaLista) {
 
-    atualizaListagem(novaLista) { this.setState({lista:novaLista}); }
+            this.setState( {lista: novaLista} );
+        }.bind(this));
+    }
 
     render() {
 
         return(
             <div>
-                <FormAuthor callbackAtualizaListagem={this.atualizaListagem} />
+                <FormAuthor />
                 <TableAuthor lista={this.state.lista} />
             </div>
         );

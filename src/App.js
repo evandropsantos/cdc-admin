@@ -16,7 +16,6 @@ class App extends Component {
 				<div id="menu">
 					<div className="pure-menu">
 						<a className="pure-menu-heading" href="">Company</a>
-
 						<ul className="pure-menu-list">
 							<li className="pure-menu-item"><a href="" className="pure-menu-link">Home</a></li>
 							<li className="pure-menu-item"><a href="" className="pure-menu-link">Autor</a></li>
@@ -27,10 +26,7 @@ class App extends Component {
 
 				<div id="main">
 					<div className="header"><h1>Cadastro de Autores</h1></div>
-
-					<div className="content" id="content">
-						<AuthorBox />
-					</div>
+					<div className="content" id="content"><AuthorBox /></div>
 				</div> 
 			</div>
 		);
