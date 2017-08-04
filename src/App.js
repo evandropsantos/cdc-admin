@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './css/pure-min.css';
 import './css/side-menu.css';
 
-import {FormAuthor, TableAuthor} from './Author'
+import AuthorBox from './Author'
 
 class App extends Component {
 
@@ -29,8 +29,7 @@ class App extends Component {
 					<div className="header"><h1>Cadastro de Autores</h1></div>
 
 					<div className="content" id="content">
-						<FormAuthor />
-						<TableAuthor />          
+						<AuthorBox />
 					</div>
 				</div> 
 			</div>

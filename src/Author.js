@@ -4,7 +4,7 @@ import $ from 'jquery';
 import InputCustom from './components/InputCustom';
 import SubmitCustom from './components/SubmitCustom';
 
-export class FormAuthor extends Component {
+class FormAuthor extends Component {
 
     constructor() {
 
@@ -15,7 +15,7 @@ export class FormAuthor extends Component {
 		this.enviaForm = this.enviaForm.bind(this);
 		this.setNome = this.setNome.bind(this);
 		this.setEmail = this.setEmail.bind(this);
-		this.setSenha = this.setSenha.bind(this);
+        this.setSenha = this.setSenha.bind(this);
     }
 
     enviaForm(event) {
@@ -28,7 +28,7 @@ export class FormAuthor extends Component {
 			dataType:'json',
 			type:'post',
 			data: JSON.stringify( {nome: this.state.nome, email: this.state.email, senha: this.state.senha} ),
-			success: function(response) { this.setState({lista:response}); }.bind(this),
+			success: function(response) { this.props.callbackAtualizaListagem(response); }.bind(this),
 			error: function(error) { console.log(error); }
 		});
 	}
@@ -54,23 +54,7 @@ export class FormAuthor extends Component {
     }
 }
 
-export class TableAuthor extends Component {
-
-    constructor() {
-
-        super();
-
-        this.state = {lista: []};
-    }
-
-    componentDidMount() {
-
-		$.ajax({
-			url: "http://localhost:8080/api/autores",
-			dataType: 'json',
-			success: function(response) { this.setState({lista:response}); }.bind(this)
-		});      
-    }
+class TableAuthor extends Component {
     
     render() {
 
@@ -86,7 +70,7 @@ export class TableAuthor extends Component {
                     
                     <tbody>
                         {
-                            this.state.lista.map(function(autor) {
+                            this.props.lista.map(function(autor) {
                                 return (
                                     <tr key={autor.id}>
                                         <td>{autor.nome}</td>
@@ -98,6 +82,39 @@ export class TableAuthor extends Component {
                     </tbody>
                 </table> 
             </div>   
+        );
+    }
+}
+
+export default class AuthorBox extends Component {
+
+    constructor() {
+
+        super();
+
+        this.state = {lista: []};
+        
+        this.atualizaListagem = this.atualizaListagem.bind(this);
+    }
+
+    componentDidMount() {
+
+		$.ajax({
+			url: "http://localhost:8080/api/autores",
+			dataType: 'json',
+			success: function(response) { this.setState({lista:response}); }.bind(this)
+		});      
+    }
+
+    atualizaListagem(novaLista) { this.setState({lista:novaLista}); }
+
+    render() {
+
+        return(
+            <div>
+                <FormAuthor callbackAtualizaListagem={this.atualizaListagem} />
+                <TableAuthor lista={this.state.lista} />
+            </div>
         );
     }
 }
